@@ -10,6 +10,7 @@ pub struct Assets {
 impl Assets {
     pub async fn load() -> Self {
         Self {
+            // i think i get error becasuse i have both a file and directory have the same name
             paddle_left: load_texture("assets/paddle_left.png").await.unwrap(),
             paddle_right: load_texture("assets/paddle_right.png").await.unwrap(),
             ball: load_texture("assets/ball.png").await.unwrap(),

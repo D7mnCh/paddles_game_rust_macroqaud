@@ -26,6 +26,9 @@ building a paddle game in rust (not c++ because i am afraid of it) using macroqu
 | `Esc`  |  quit the game          |
 
 
+## What i learn
+- you can make multiple  related structs on one file, if those structs are small
+
 ## TODO
 - [ ] add screenshots
 - [ ] link the web page here 

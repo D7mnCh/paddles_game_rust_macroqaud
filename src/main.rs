@@ -1,11 +1,28 @@
-mod assetes;
+mod assets;
 mod config;
 mod functions;
 mod objects;
-use crate::assetes::*;
+mod state;
+mod paddles;
+mod ball;
+
+use crate::assets::*;
 use crate::config::*;
 use crate::functions::*;
 use crate::objects::{ball::*, paddel::*};
+use crate::state::*;
+use crate::paddles::*;
+use crate::ball::*;
+
+pub const WIDTH: i32 = 1200;
+pub const HEIGHT: i32 = 800;
+pub const WINDOW_TITLE: &str = "ping_pong";
+
+pub const PADDLE_WIDTH: f32 = 20.;
+pub const PADDLE_HEIGHT: f32 = 60.;
+pub const PADDLE_VEL: f32 = 10.;
+
+pub static mut BALL_VEL: f32 = 10.;
 
 use macroquad::{prelude::*, rand::rand};
 
@@ -14,7 +31,7 @@ async fn main() {
     let mut is_running: bool = false;
 
     // loading textures
-    let assests: Assets = Assets::load().await;
+    let assets: Assets = Assets::load().await;
 
     //objects settings
     let mut paddel_1 = Paddel::new(
@@ -23,7 +40,7 @@ async fn main() {
         PADDEL_WIDTH,
         PADDEL_HEIGHT,
         0,
-        &assests.paddle_right,
+        &assets.paddle_right,
     );
     let mut paddel_2 = Paddel::new(
         WIDTH as f32 - RIGHT_PADDEL_WIDTH_GAP,
@@ -31,25 +48,24 @@ async fn main() {
         PADDEL_WIDTH,
         PADDEL_HEIGHT,
         0,
-        &assests.paddle_left,
+        &assets.paddle_left,
     );
 
     rand::srand(macroquad::miniquad::date::now() as _);
-    let dir = {
-        let dir = rand() % 2;
-        if dir == 0 { 1 } else { -1 }
+    let direction = {
+        let direction = rand() % 2;
+        if direction == 0 { 1 } else { -1 }
     };
-    let velocity: Vec2 = Vec2::new(dir as f32 * 7., 7.);
-    // let ball_dim: Vec2 = Vec2::new(BALL_DIM, BALL_DIM);
+    let velocity: Vec2 = Vec2::new(direction as f32 * 7., 7.);
     let mut ball: Ball = Ball::new(
         screen_width() / 2.,
         screen_height() / 2.,
         BALL_DIM,
         BALL_DIM,
         velocity,
-        &assests.ball,
+        &assets.ball,
     );
-    println!("{}", velocity.x);
+    ///////////////////////////
 
     loop {
         // Event handling
@@ -101,12 +117,12 @@ async fn main() {
             // println!("paddel left  score: {}", paddel_1.score);
             // println!("paddel right score: {}", paddel_2.score);
             // println!("{ball:?}");
-            // println!("{dir}");
+            // println!("{direction}");
             // println!("{is_running}");
             // println!("{delta}");
         }
         // Drawing
-        draw_texture(&assests.background, 0., 0., WHITE);
+        draw_texture(&assets.background, 0., 0., WHITE);
         if !is_running {
             game_stop();
             display_score(&paddel_1);
@@ -121,3 +137,8 @@ async fn main() {
         next_frame().await;
     }
 }
+/*
+ TODO:
+    make a struct (state) that groups data (make main for now just for)
+    inialization of the value
+*/

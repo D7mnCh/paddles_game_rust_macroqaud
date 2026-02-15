@@ -3,7 +3,7 @@ use crate::objects::ball::*;
 use crate::objects::paddel::*;
 use macroquad::{miniquad::conf::Platform, prelude::*, rand::rand};
 
-pub(crate) fn window_conf() -> Conf {
+pub fn window_conf() -> Conf {
     Conf {
         window_title: WINDOW_TITLE.to_owned(),
         window_height: HEIGHT,
@@ -25,10 +25,11 @@ pub fn collistion(ball: &mut Ball, paddel: &mut Paddel, is_running: &mut bool) {
         let dir = (rand() % 2) as f32;
         if dir == 0. { 1. } else { -1. }
     };
-    if ball.width <= paddel.width + PADDEL_WIDTH
-        && ball.width + BALL_DIM >= paddel.width
-        && paddel.height <= ball.height + BALL_DIM
-        && paddel.height + PADDEL_HEIGHT >= ball.height
+    // i don't need to match 
+    if ball.width <= paddel.width + PADDEL_WIDTH // right // if this true the underneath one also
+        && ball.width + BALL_DIM >= paddel.width // left // always true if the above one is true
+        && paddel.height <= ball.height + BALL_DIM // both
+        && paddel.height + PADDEL_HEIGHT >= ball.height // both
     {
         // alwasy when you have tolloning, just teleport it
         let ball_teleport_by = 7.;
@@ -40,6 +41,7 @@ pub fn collistion(ball: &mut Ball, paddel: &mut Paddel, is_running: &mut bool) {
         ball.velocity.x *= -1.;
     }
     // after ball collide with the wall check witch paddel to add score with
+    // left
     if ball.width <= 0. && paddel.width > (WIDTH / 2) as f32 {
         *is_running = false;
 
@@ -48,6 +50,7 @@ pub fn collistion(ball: &mut Ball, paddel: &mut Paddel, is_running: &mut bool) {
         ball.width = WIDTH as f32 / 2.;
         ball.height = HEIGHT as f32 / 2.;
         paddel.score += 1;
+    // right
     } else if ball.width + BALL_DIM >= WIDTH as f32 && paddel.width < (WIDTH / 2) as f32 {
         *is_running = false;
 
