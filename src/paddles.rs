@@ -1,35 +1,71 @@
-use macroquad::prelude::*;
 use crate::state::*;
 use crate::*;
+use macroquad::prelude::*;
 
+#[derive(Debug)]
 pub enum Paddles {
     Right(Paddle),
-    Left(Paddle)
+    Left(Paddle),
 }
 
-pub struct Paddle{
-   pub texture: Texture2D,
-   pub pos: Vec2,
-   pub score: i32,
+#[derive(Debug)]
+pub struct Paddle {
+    pub texture: Texture2D,
+    pub pos: Vec2,
+    pub score: i32,
 }
-
+impl Paddle {
+    pub fn reset_paddles (&mut self) {
+        self.pos.y = HEIGHT as f32 / 2.;
+        println!("right paddle reset ");
+        self.pos.y = HEIGHT as f32 / 2.;
+        println!("left paddle reset");
+    }
+}
 impl Renderable for Paddles {
-    fn draw (&self) {
+    fn draw(&self) {
         match self {
-            Paddles::Right(paddle) =>{
+            Paddles::Right(paddle) => {
                 draw_texture(&paddle.texture, paddle.pos.x, paddle.pos.y, WHITE);
-            },
-            Paddles::Left(paddle) =>{ 
+            }
+            Paddles::Left(paddle) => {
                 draw_texture(&paddle.texture, paddle.pos.x, paddle.pos.y, WHITE);
-            },
+            }
+        }
+    }
+}
+impl Paddles {
+    pub fn draw_scores(&self) {
+        match self {
+            Paddles::Right(paddle) => {
+                let paddel_score = format!("score: {}", paddle.score);
+                draw_text(paddel_score.as_str(), WIDTH as f32 - 200., 40., 50., GRAY);
+            }
+            Paddles::Left(paddle) => {
+                let paddel_score = format!("score: {}", paddle.score);
+                draw_text(paddel_score.as_str(), 10., 40., 50., GRAY);
+            }
+        }
+    }
+
+    pub fn reset_paddles (&mut self) {
+        match self {
+            Paddles::Right(paddle) => {
+                paddle.pos.y = HEIGHT as f32 / 2.;
+                println!("right paddle reset ");
+            }
+            Paddles::Left(paddle) => {
+                paddle.pos.y = HEIGHT as f32 / 2.;
+                println!("left paddle reset");
+            }
         }
     }
 }
 
-impl Movable for Paddles {
-    fn _move (&mut self) {
+impl Updatable for Paddles {
+    fn update(&mut self) {
         match self {
-            Paddles::Right(paddle) =>{
+            Paddles::Right(paddle) => {
                 if is_key_down(KeyCode::Down) {
                     if paddle.pos.y <= HEIGHT as f32
                         && paddle.pos.y != HEIGHT as f32 - PADDLE_HEIGHT
@@ -46,8 +82,8 @@ impl Movable for Paddles {
                         paddle.pos.y = 0.;
                     }
                 }
-            },
-            Paddles::Left(paddle) =>{
+            }
+            Paddles::Left(paddle) => {
                 if is_key_down(KeyCode::S) {
                     if paddle.pos.y <= HEIGHT as f32
                         && paddle.pos.y != HEIGHT as f32 - PADDLE_HEIGHT
@@ -64,8 +100,7 @@ impl Movable for Paddles {
                         paddle.pos.y = 0.;
                     }
                 }
-            },
+            }
         }
     }
 }
-

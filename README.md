@@ -1,10 +1,23 @@
 # paddle_game_rust_macroqaud
 building a paddle game in rust (not c++ because i am afraid of it) using macroquad game library
+# you can play my game by pressing this link on a web browser
+- https://d7mnch.github.io/paddles_game_rust_macroqaud/
 
 # Screenshots
 
 - for the people who don't use screenshots, if you love god pls use them in your projects
-- screenshots here
+![Alt text](/screenshots/ping_pong.png?raw=true "ping pong game")
+
+#  running the Game
+- Need to get rust first
+``` bash
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+```
+- `git clone` this repo
+- `cargo run` at the root directory (is where the file `Cargo.toml`on it !)
+
+> [!warning] No such file or directory
+> You need to be on the directory that have `cargo.toml` on it 
 ## Control the paddles
 
 ### this for left paddle
@@ -23,17 +36,11 @@ building a paddle game in rust (not c++ because i am afraid of it) using macroqu
 | Keys   | action                  |
 | ------ | ----------------------  |
 | `Space`| suspend (stops the game)|
-| `Esc`  |  quit the game          |
 
 
 ## What i learn
 - you can make multiple  related structs on one file, if those structs are small
+- it's better to have Gui library for ui's stuff, it makes manipulating parameters at runtime (save a lot of time)
 
 ## TODO
-- [ ] add screenshots
-- [ ] link the web page here 
-- [ ] make the game on the web at the middle
-- [ ] make how to built the game from the source section
-- [ ] add a description 
-- [ ] make paddles position after score at the center
-- [ ] add more features i guess 
+- [ ] reset both paddles when one of the paddle get a point
