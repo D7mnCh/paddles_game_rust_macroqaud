@@ -1,6 +1,6 @@
-use crate::state::*;
-use crate::*;
 use macroquad::prelude::*;
+use crate::traits::*;
+use crate::config::*;
 
 #[derive(Debug)]
 pub enum Paddles {
@@ -12,13 +12,17 @@ pub enum Paddles {
 pub struct Paddle {
     pub texture: Texture2D,
     pub pos: Vec2,
+    pub vel: Vec2,
     pub score: i32,
 }
 impl Paddle {
     pub fn reset_paddles (&mut self) {
-        self.pos.y = HEIGHT as f32 / 2.;
+        let config = Config::new();
+        let wcfg = config.window_config;
+
+        self.pos.y = wcfg.screen_height as f32 / 2.;
         println!("right paddle reset ");
-        self.pos.y = HEIGHT as f32 / 2.;
+        self.pos.y = wcfg.screen_height as f32 / 2.;
         println!("left paddle reset");
     }
 }
@@ -36,10 +40,13 @@ impl Renderable for Paddles {
 }
 impl Paddles {
     pub fn draw_scores(&self) {
+        let config = Config::new();
+        let wcfg = config.window_config;
+
         match self {
             Paddles::Right(paddle) => {
                 let paddel_score = format!("score: {}", paddle.score);
-                draw_text(paddel_score.as_str(), WIDTH as f32 - 200., 40., 50., GRAY);
+                draw_text(paddel_score.as_str(), wcfg.screen_width as f32 - 200., 40., 50., GRAY);
             }
             Paddles::Left(paddle) => {
                 let paddel_score = format!("score: {}", paddle.score);
@@ -48,14 +55,16 @@ impl Paddles {
         }
     }
 
-    pub fn reset_paddles (&mut self) {
+    pub fn reset_paddles (&mut self, config: &Config) {
+        let wcfg = &config.window_config;
+
         match self {
             Paddles::Right(paddle) => {
-                paddle.pos.y = HEIGHT as f32 / 2.;
+                paddle.pos.y = wcfg.screen_height as f32 / 2.;
                 println!("right paddle reset ");
             }
             Paddles::Left(paddle) => {
-                paddle.pos.y = HEIGHT as f32 / 2.;
+                paddle.pos.y = wcfg.screen_height as f32 / 2.;
                 println!("left paddle reset");
             }
         }
@@ -63,21 +72,23 @@ impl Paddles {
 }
 
 impl Updatable for Paddles {
-    fn update(&mut self) {
+    fn update(&mut self, config: &Config) {
+        let gcfg = &config.gameplay_config;
+        let wcfg = &config.window_config;
         match self {
             Paddles::Right(paddle) => {
                 if is_key_down(KeyCode::Down) {
-                    if paddle.pos.y <= HEIGHT as f32
-                        && paddle.pos.y != HEIGHT as f32 - PADDLE_HEIGHT
+                    if paddle.pos.y <= wcfg.screen_height as f32
+                        && paddle.pos.y != wcfg.screen_height as f32 - gcfg.paddle_height
                     {
-                        paddle.pos.y += PADDLE_VEL;
+                        paddle.pos.y += paddle.vel.y;
                     } else {
-                        paddle.pos.y = HEIGHT as f32 - PADDLE_HEIGHT;
+                        paddle.pos.y = wcfg.screen_height as f32 - gcfg.paddle_height;
                     }
                 }
                 if is_key_down(KeyCode::Up) {
                     if paddle.pos.y >= 0. && paddle.pos.y != 0. {
-                        paddle.pos.y -= PADDLE_VEL;
+                        paddle.pos.y -= paddle.vel.y;
                     } else {
                         paddle.pos.y = 0.;
                     }
@@ -85,17 +96,17 @@ impl Updatable for Paddles {
             }
             Paddles::Left(paddle) => {
                 if is_key_down(KeyCode::S) {
-                    if paddle.pos.y <= HEIGHT as f32
-                        && paddle.pos.y != HEIGHT as f32 - PADDLE_HEIGHT
+                    if paddle.pos.y <= wcfg.screen_height as f32
+                        && paddle.pos.y != wcfg.screen_height as f32 - gcfg.paddle_height
                     {
-                        paddle.pos.y += PADDLE_VEL;
+                        paddle.pos.y += paddle.vel.y;
                     } else {
-                        paddle.pos.y = HEIGHT as f32 - PADDLE_HEIGHT;
+                        paddle.pos.y = wcfg.screen_height as f32 - gcfg.paddle_height;
                     }
                 }
                 if is_key_down(KeyCode::W) {
                     if paddle.pos.y >= 0. && paddle.pos.y != 0. {
-                        paddle.pos.y -= PADDLE_VEL;
+                        paddle.pos.y -= paddle.vel.y;
                     } else {
                         paddle.pos.y = 0.;
                     }

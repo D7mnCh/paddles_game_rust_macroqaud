@@ -2,30 +2,25 @@ mod assets;
 mod ball;
 mod paddles;
 mod state;
+mod config;
+mod game_state;
+mod traits;
 
 use crate::miniquad::conf::Platform;
 use crate::state::*;
 use macroquad::prelude::*;
-
-pub const WIDTH: i32 = 1200;
-pub const HEIGHT: i32 = 800;
-pub const WINDOW_TITLE: &str = "ping_pong";
-
-pub const PADDLE_WIDTH: f32 = 20.;
-pub const PADDLE_HEIGHT: f32 = 60.;
-pub const PADDLE_VEL: f32 = 10.;
-
-pub static mut BALL_VEL: Vec2 = Vec2::new(10., 10.);
-pub const BALL_DIM: f32 = 30.;
+use crate::config::*;
 
 pub fn window_conf() -> Conf {
+    let config = Config::new();
+    let wcfg = &config.window_config;
     Conf {
-        window_title: WINDOW_TITLE.to_owned(),
-        window_height: HEIGHT,
-        window_width: WIDTH,
+        window_title: wcfg.window_title.to_owned(),
+        window_height: wcfg.screen_height,
+        window_width: wcfg.screen_width,
         #[cfg(target_os = "linux")]
         platform: Platform {
-            linux_wm_class: WINDOW_TITLE,
+            linux_wm_class: wcfg.window_title,
             ..Default::default()
         },
         ..Default::default()
