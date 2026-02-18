@@ -1,21 +1,24 @@
 use crate::assets::*;
+use crate::traits::*;
 use crate::ball::*;
 use crate::paddles::*;
 use crate::config::*;
-use crate::traits::*;
 use crate::game_state::*;
 use macroquad::{prelude::*, rand::rand};
 
-pub struct State  {
-    is_running: bool,
+// i think i can make a struct that connect Entities (ball and paddles)
+// or have different structs for entities that interects with each other
+pub struct State {
     game_state: GameState,
     config: Config,
+    // this is a weird field
     background: Texture2D,
     paddles: [Paddles; 2],
     ball: Ball,
 }
 impl  State  {
     pub async fn new() -> Self {
+        // make this in config.rs file
         let assets: Assets = Assets::load().await;
 
         let config = Config::new();
@@ -47,47 +50,50 @@ impl  State  {
                 },
                 score: 0,
             }),
-        ];
-        // dealling with seeds for getting rand ro work well it term of randomness
-        rand::srand(macroquad::miniquad::date::now() as _);
-        let mut ball = Ball {
-            texture: assets.ball,
-            pos: Vec2 {
-                x: wcfg.screen_width as f32 / 2.,
-                y: wcfg.screen_height as f32 / 2.,
-            },
-            vel: Vec2 {
-                x: 10.,
-                y: 10.
+            ];
+            // dealling with seeds for getting rand ro work well it term of randomness
+            rand::srand(macroquad::miniquad::date::now() as _);
+            let mut ball = Ball {
+                texture: assets.ball,
+                pos: Vec2 {
+                    x: wcfg.screen_width as f32 / 2.,
+                    y: wcfg.screen_height as f32 / 2.,
+                },
+                vel: Vec2 {
+                    x: 10.,
+                    y: 10.
+                }
+            };
+            let dir: f32 = {
+                let dir = (rand() % 2) as f32;
+                if dir == 0. { 1. } else { -1. }
+            };
+            ball.vel.x *= dir;
+
+            Self {
+                game_state: GameState::Pausing,
+                config: config,
+                background: assets.background,
+                paddles,
+                ball,
             }
-        };
-        let dir: f32 = {
-            let dir = (rand() % 2) as f32;
-            if dir == 0. { 1. } else { -1. }
-        };
-        ball.vel.x *= dir;
-
-        Self {
-            is_running: false,
-            game_state: GameState::Pausing,
-            config: config,
-            background: assets.background,
-            paddles,
-            ball,
-        }
     }
-
     fn config_input_handling(&mut self) {
-        /*
-        if is_key_pressed(KeyCode::Escape) {
-            break;
-        }
-        */
+           if is_key_pressed(KeyCode::Escape) {
+               match self.game_state {
+                   _ => self.game_state = GameState::GameOver,
+               }
+           }
         if is_key_pressed(KeyCode::Space) {
-            self.is_running = !self.is_running;
+            match self.game_state {
+                GameState::Running => self.game_state = GameState::Pausing,
+                GameState::Pausing => self.game_state = GameState::Running,
+                _ => (),
+            }
         }
     }
 
+    // those methods don't belong here
     fn paddle_ball_collision(&mut self) {
         let gcfg = &self.config.gameplay_config;
         for paddle in self.paddles.iter_mut() {
@@ -95,7 +101,7 @@ impl  State  {
                 Paddles::Left(paddle) => {
                     if self.ball.pos.x <= paddle.pos.x + gcfg.paddle_width
                         && paddle.pos.y <= self.ball.pos.y + gcfg.ball_dim
-                        && paddle.pos.y + gcfg.paddle_height >= self.ball.pos.y
+                            && paddle.pos.y + gcfg.paddle_height >= self.ball.pos.y
                     {
                         // alwasy when you have tunneling, just teleport it
                         let ball_teleport_by = 10.;
@@ -106,7 +112,7 @@ impl  State  {
                 Paddles::Right(paddle) => {
                     if self.ball.pos.x + gcfg.ball_dim >= paddle.pos.x
                         && paddle.pos.y <= self.ball.pos.y + gcfg.ball_dim
-                        && paddle.pos.y + gcfg.paddle_height >= self.ball.pos.y
+                            && paddle.pos.y + gcfg.paddle_height >= self.ball.pos.y
                     {
                         // alwasy when you have tunneling, just teleport it
                         let ball_teleport_by = 10.;
@@ -125,37 +131,31 @@ impl  State  {
             match paddle {
                 Paddles::Right(paddle) => {
                     // updating score
-                    // how this logic is correct for right paddle ?
-                    if self.ball.pos.x + gcfg.ball_dim >= wcfg.screen_width as f32 {
-                        println!("[Info]: right paddle get a point ?");
-                        self.is_running = false;
-
+                    if self.ball.pos.x <= 0. {
+                        self.game_state = GameState::Pausing;
                         paddle.score += 1;
                     }
                 }
 
                 Paddles::Left(paddle) => {
                     // updating score
-                    if self.ball.pos.x <= 0. {
-                        println!("[Info]: right paddle get a point ?");
-                        self.is_running = false;
-
+                    if self.ball.pos.x + gcfg.ball_dim >= wcfg.screen_width as f32 {
+                        self.game_state = GameState::Pausing;
                         paddle.score += 1;
                     }
                 }
             }
-            // why this doesn't work for both ? only worked on the right paddle, that's weird
             if self.ball.pos.x + gcfg.ball_dim >= wcfg.screen_width as f32
                 || self.ball.pos.x <= 0. {
-                    //paddle.reset_paddles();
+                    paddle.reset_paddles(&self.config);
             }
         }
     }
-    fn stop_game(&self) {
+    fn pause_game(&self) {
         let wcfg = &self.config.window_config;
 
         draw_text(
-            "Game stops!",
+            "Game paused!",
             wcfg.screen_width as f32 / 2.4,
             wcfg.screen_height as f32 / 3.,
             50.,
@@ -173,25 +173,29 @@ impl  State  {
         loop {
             self.config_input_handling();
             draw_texture(&self.background, 0., 0., WHITE);
-            if self.is_running {
-                for paddle in self.paddles.iter_mut() {
-                    paddle.update(&self.config);
-                }
+            match self.game_state {
+                GameState::Running => {
+                    for paddle in self.paddles.iter_mut() {
+                        paddle.update(&self.config);
+                    }
 
-                // should update score then replace ball, right ?
-                self.paddle_ball_collision();
-                self.add_score_to_paddle();
-                self.ball.update(&self.config);
+                    self.paddle_ball_collision();
+                    self.add_score_to_paddle();
+                    self.ball.update(&self.config);
+                },
+                GameState::Pausing => {
+                    self.pause_game();
+                },
+                GameState::GameOver => {
+                    break
+                }
             }
             for paddle in self.paddles.iter() {
                 paddle.draw_scores();
                 paddle.draw();
             }
             self.ball.draw();
-            if self.is_running == false {
-                self.stop_game();
-            }
             next_frame().await;
+            }
         }
     }
-}

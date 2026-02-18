@@ -21,11 +21,20 @@ impl Updatable for Ball {
         let gcfg = &config.gameplay_config;
         let wcfg = &config.window_config;
 
-        self.pos.x += self.vel.x ;
-        self.pos.y += self.vel.y ;
+        // update ball based when she hits the walls
+        if self.pos.x + gcfg.ball_dim >= wcfg.screen_width as f32 
+            || self.pos.x <= 0.
+        {
+            let dir: f32 = {
+                let dir = (rand() % 2) as f32;
+                if dir == 0. { 1. } else { -1. }
+            };
+            self.vel.x *= dir;
+            self.pos.x = wcfg.screen_width as f32 / 2.;
+            self.pos.y = wcfg.screen_height as f32 / 2.;
+        }
 
-        // update ball based when she hit the cielling
-        //and the floor 
+        // update ball based when she hits the cielling or the floor
         if self.pos.y + gcfg.ball_dim >= wcfg.screen_height as f32 {
             self.pos.y = wcfg.screen_height as f32 - gcfg.ball_dim;
             self.vel.y *= -1. ;
@@ -34,18 +43,9 @@ impl Updatable for Ball {
              self.vel.y *= -1.;
         }
 
-        // update ball based when she hit the walls
-        if self.pos.x + gcfg.ball_dim >= wcfg.screen_width as f32
-            || self.pos.x <= 0.
-        {
-            let dir: f32 = {
-                let dir = (rand() % 2) as f32;
-                if dir == 0. { 1. } else { -1. }
-            };
+        // update the ball at the end
+        self.pos.x += self.vel.x ;
+        self.pos.y += self.vel.y ;
 
-            self.vel.x *= dir;
-            self.pos.x = wcfg.screen_width as f32 / 2.;
-            self.pos.y = wcfg.screen_height as f32 / 2.;
-        }
     }
 }

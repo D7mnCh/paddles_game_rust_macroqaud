@@ -48,9 +48,5 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 - Tratis need context (like update needs game state in order to update the entity based on that state)
 
 ## TODO
-- [ ] reset both paddles when one of the paddle get a point
-- [ ] fix your screenshot, (oh man)
-- [ ] traits need context
-- [ ] separate funtionality of one big functions into functions
 
 

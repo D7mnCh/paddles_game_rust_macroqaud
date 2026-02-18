@@ -15,17 +15,7 @@ pub struct Paddle {
     pub vel: Vec2,
     pub score: i32,
 }
-impl Paddle {
-    pub fn reset_paddles (&mut self) {
-        let config = Config::new();
-        let wcfg = config.window_config;
 
-        self.pos.y = wcfg.screen_height as f32 / 2.;
-        println!("right paddle reset ");
-        self.pos.y = wcfg.screen_height as f32 / 2.;
-        println!("left paddle reset");
-    }
-}
 impl Renderable for Paddles {
     fn draw(&self) {
         match self {
@@ -61,11 +51,9 @@ impl Paddles {
         match self {
             Paddles::Right(paddle) => {
                 paddle.pos.y = wcfg.screen_height as f32 / 2.;
-                println!("right paddle reset ");
             }
             Paddles::Left(paddle) => {
                 paddle.pos.y = wcfg.screen_height as f32 / 2.;
-                println!("left paddle reset");
             }
         }
     }
