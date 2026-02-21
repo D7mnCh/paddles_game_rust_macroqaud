@@ -1,15 +1,16 @@
 mod assets;
 mod ball;
-mod paddles;
-mod state;
 mod config;
 mod game_state;
+mod paddles;
+mod state;
+mod systems;
 mod traits;
 
-use crate::miniquad::conf::Platform;
-use crate::state::*;
-use macroquad::prelude::*;
-use crate::config::*;
+use crate::config::Config;
+use crate::state::State;
+use macroquad::prelude::miniquad;
+use miniquad::conf::{Conf, Platform};
 
 pub fn window_conf() -> Conf {
     let config = Config::new();
