@@ -1,8 +1,8 @@
-use crate::config::*;
-pub trait Renderable {
-    fn draw(&self);
+use crate::config::Config;
+use macroquad::prelude::Texture2D;
+pub trait Renderable<'a> {
+    fn draw(&mut self, texture: Option<&'a Texture2D>);
 }
 pub trait Updatable {
-    fn update(&mut self,config: &Config);
+    fn update(&mut self, config: &Config);
 }
-pub trait Controllable {}

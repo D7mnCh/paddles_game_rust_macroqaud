@@ -1,6 +1,4 @@
-use macroquad::prelude::*;
-
-// if you had an error (files not found), you need to be at the root directory !
+use macroquad::prelude::{Texture2D, load_texture};
 pub struct Assets {
     pub left_paddle: Texture2D,
     pub right_paddle: Texture2D,

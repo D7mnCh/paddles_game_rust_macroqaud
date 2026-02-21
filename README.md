@@ -44,9 +44,14 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 - Get rid off magic numbers
 - use enums everytime you are facing a state (control, gamestate)
 - use structs as much as you can when you see related data
-- don't mix functionality into one big function, separate them using functions
+- don't mix functionality into one big function, use separate funtions for them
 - Tratis need context (like update needs game state in order to update the entity based on that state)
+- don't pass evertime all the struct at once, just give what the function needs of the struct fields !
+- if you find a function that have kinda the same behavior or depend on each other, it's a system, and it's procedural 
 
 ## TODO
+- [ ] Ui struct
+- [ ] Entities struct
+- [ ] licence
 
 
