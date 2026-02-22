@@ -1,6 +1,7 @@
 mod assets;
 mod ball;
 mod config;
+mod entities;
 mod game_state;
 mod paddles;
 mod state;

@@ -1,59 +1,53 @@
+use crate::assets::Assets;
 use crate::config::Config;
 use crate::traits::*;
-use macroquad::prelude::{
-    GRAY, KeyCode, Texture2D, Vec2, WHITE, draw_text, draw_texture, is_key_down,
-};
+use macroquad::prelude::{GRAY, KeyCode, Vec2, WHITE, draw_text, draw_texture, is_key_down};
 
 #[derive(Debug)]
-pub enum Paddles<'a> {
-    Right(Paddle<'a>),
-    Left(Paddle<'a>),
+pub enum Side {
+    Right,
+    Left,
 }
 
 #[derive(Debug)]
-pub struct Paddle<'a> {
-    pub texture: Option<&'a Texture2D>,
+pub struct Paddle {
+    pub side: Side,
     pub pos: Vec2,
     pub size: Vec2,
     pub vel: Vec2,
     pub score: i32,
 }
 
-impl<'a> Renderable<'a> for Paddles<'a> {
-    fn draw(&mut self, texture: Option<&'a Texture2D>) {
-        match self {
-            Paddles::Right(paddle) => {
-                paddle.texture = texture;
+impl Renderable for Paddle {
+    fn draw(&mut self, texture: &Assets) {
+        match self.side {
+            Side::Right => {
                 draw_texture(
-                    paddle
-                        .texture
-                        .expect("could not find right-paddle's texture"),
-                    paddle.pos.x,
-                    paddle.pos.y,
+                    &texture
+                        .right_paddle,
+                    self.pos.x,
+                    self.pos.y,
                     WHITE,
                 );
             }
-            Paddles::Left(paddle) => {
-                paddle.texture = texture;
+            Side::Left => {
                 draw_texture(
-                    paddle
-                        .texture
-                        .expect("could not find right-paddle's texture"),
-                    paddle.pos.x,
-                    paddle.pos.y,
+                    &texture.left_paddle,
+                    self.pos.x,
+                    self.pos.y,
                     WHITE,
                 );
             }
         }
     }
 }
-impl<'a> Paddles<'a> {
+impl Paddle {
     pub fn new(config: &Config) -> [Self; 2] {
         let wcfg = &config.window_config;
         let size: Vec2 = Vec2::new(20., 60.);
         let paddles = [
-            Paddles::Right(Paddle {
-                texture: None,
+            Self {
+                side: Side::Right,
                 pos: Vec2 {
                     x: wcfg.screen_width as f32 - size.x - 20.,
                     y: wcfg.screen_height as f32 / 2.,
@@ -61,9 +55,9 @@ impl<'a> Paddles<'a> {
                 vel: Vec2 { x: 10., y: 10. },
                 size: Vec2 { x: 20., y: 60. },
                 score: 0,
-            }),
-            Paddles::Left(Paddle {
-                texture: None,
+            },
+            Self {
+                side: Side::Left,
                 pos: Vec2 {
                     x: size.x,
                     y: wcfg.screen_height as f32 / 2.,
@@ -71,7 +65,7 @@ impl<'a> Paddles<'a> {
                 vel: Vec2 { x: 10., y: 10. },
                 size: Vec2 { x: 20., y: 60. },
                 score: 0,
-            }),
+            },
         ];
         paddles
     }
@@ -79,9 +73,9 @@ impl<'a> Paddles<'a> {
         let config = Config::new();
         let wcfg = config.window_config;
 
-        match self {
-            Paddles::Right(paddle) => {
-                let paddel_score = format!("score: {}", paddle.score);
+        match self.side {
+            Side::Right => {
+                let paddel_score = format!("score: {}", self.score);
                 draw_text(
                     paddel_score.as_str(),
                     wcfg.screen_width as f32 - 200.,
@@ -90,8 +84,8 @@ impl<'a> Paddles<'a> {
                     GRAY,
                 );
             }
-            Paddles::Left(paddle) => {
-                let paddel_score = format!("score: {}", paddle.score);
+            Side::Left => {
+                let paddel_score = format!("score: {}", self.score);
                 draw_text(paddel_score.as_str(), 10., 40., 50., GRAY);
             }
         }
@@ -100,54 +94,54 @@ impl<'a> Paddles<'a> {
     pub fn reset_paddles(&mut self, config: &Config) {
         let wcfg = &config.window_config;
 
-        match self {
-            Paddles::Right(paddle) => {
-                paddle.pos.y = wcfg.screen_height as f32 / 2.;
+        match self.side {
+            Side::Right => {
+                self.pos.y = wcfg.screen_height as f32 / 2.;
             }
-            Paddles::Left(paddle) => {
-                paddle.pos.y = wcfg.screen_height as f32 / 2.;
+            Side::Left => {
+                self.pos.y = wcfg.screen_height as f32 / 2.;
             }
         }
     }
 }
 
-impl<'a> Updatable for Paddles<'a> {
+impl Updatable for Paddle {
     fn update(&mut self, config: &Config) {
         let wcfg = &config.window_config;
-        match self {
-            Paddles::Right(paddle) => {
+        match self.side {
+            Side::Right => {
                 if is_key_down(KeyCode::Down) {
-                    if paddle.pos.y <= wcfg.screen_height as f32
-                        && paddle.pos.y != wcfg.screen_height as f32 - paddle.size.y
+                    if self.pos.y <= wcfg.screen_height as f32
+                        && self.pos.y != wcfg.screen_height as f32 - self.size.y
                     {
-                        paddle.pos.y += paddle.vel.y;
+                        self.pos.y += self.vel.y;
                     } else {
-                        paddle.pos.y = wcfg.screen_height as f32 - paddle.size.y;
+                        self.pos.y = wcfg.screen_height as f32 - self.size.y;
                     }
                 }
                 if is_key_down(KeyCode::Up) {
-                    if paddle.pos.y >= 0. && paddle.pos.y != 0. {
-                        paddle.pos.y -= paddle.vel.y;
+                    if self.pos.y >= 0. && self.pos.y != 0. {
+                        self.pos.y -= self.vel.y;
                     } else {
-                        paddle.pos.y = 0.;
+                        self.pos.y = 0.;
                     }
                 }
             }
-            Paddles::Left(paddle) => {
+            Side::Left => {
                 if is_key_down(KeyCode::S) {
-                    if paddle.pos.y <= wcfg.screen_height as f32
-                        && paddle.pos.y != wcfg.screen_height as f32 - paddle.size.y
+                    if self.pos.y <= wcfg.screen_height as f32
+                        && self.pos.y != wcfg.screen_height as f32 - self.size.y
                     {
-                        paddle.pos.y += paddle.vel.y;
+                        self.pos.y += self.vel.y;
                     } else {
-                        paddle.pos.y = wcfg.screen_height as f32 - paddle.size.y;
+                        self.pos.y = wcfg.screen_height as f32 - self.size.y;
                     }
                 }
                 if is_key_down(KeyCode::W) {
-                    if paddle.pos.y >= 0. && paddle.pos.y != 0. {
-                        paddle.pos.y -= paddle.vel.y;
+                    if self.pos.y >= 0. && self.pos.y != 0. {
+                        self.pos.y -= self.vel.y;
                     } else {
-                        paddle.pos.y = 0.;
+                        self.pos.y = 0.;
                     }
                 }
             }
