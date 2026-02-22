@@ -1,14 +1,13 @@
+use crate::assets::Assets;
+use crate::config::Config;
 use crate::traits::*;
-use crate::*;
 use macroquad::rand::rand;
 
 use macroquad::prelude::*;
 #[derive(Debug)]
-pub struct Ball<'a> {
-    pub texture: Option<&'a Texture2D>,
+pub struct Ball {
     pub pos: Vec2,
     pub vel: Vec2,
-    // i think i should rename rad to size ?, cause the ball is bisically a rectiangle
     pub rad: f32,
     collision: Option<Collision>,
 }
@@ -19,13 +18,12 @@ enum Collision {
     LeftWall,
     Floor,
 }
-impl<'a> Ball<'a> {
+impl Ball {
     pub fn new(config: &Config) -> Self {
         let wcfg = &config.window_config;
         // dealling with seeds for getting rand ro work well it term of randomness
         rand::srand(macroquad::miniquad::date::now() as _);
         let mut ball = Ball {
-            texture: None,
             pos: Vec2 {
                 x: wcfg.screen_width as f32 / 2.,
                 y: wcfg.screen_height as f32 / 2.,
@@ -56,18 +54,12 @@ impl<'a> Ball<'a> {
         }
     }
 }
-impl<'a> Renderable<'a> for Ball<'a> {
-    fn draw(&mut self, texture: Option<&'a Texture2D>) {
-        self.texture = texture;
-        draw_texture(
-            self.texture.expect("could not find ball's texture"),
-            self.pos.x,
-            self.pos.y,
-            WHITE,
-        );
+impl Renderable for Ball {
+    fn draw(&mut self, texture: &Assets) {
+        draw_texture(&texture.ball, self.pos.x, self.pos.y, WHITE);
     }
 }
-impl<'a> Updatable for Ball<'a> {
+impl Updatable for Ball {
     fn update(&mut self, config: &Config) {
         let wcfg = &config.window_config;
         if let Some(ref collision) = self.collision.take() {

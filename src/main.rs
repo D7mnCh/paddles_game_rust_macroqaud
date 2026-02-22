@@ -1,6 +1,7 @@
 mod assets;
 mod ball;
 mod config;
+mod entities;
 mod game_state;
 mod paddles;
 mod state;
@@ -10,7 +11,10 @@ mod traits;
 use crate::config::Config;
 use crate::state::State;
 use macroquad::prelude::miniquad;
+#[cfg(target_os = "linux")]
 use miniquad::conf::{Conf, Platform};
+#[cfg(not(target_os = "linux"))]
+use miniquad::conf::Conf;
 
 pub fn window_conf() -> Conf {
     let config = Config::new();
