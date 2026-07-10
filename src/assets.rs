@@ -8,12 +8,16 @@ pub struct Assets {
 
 impl Assets {
     pub async fn load() -> Self {
+        let left_paddle_img_path = "assets/left_paddle.png";
+        let right_paddle_im_path = "assets/right_paddle.png";
+        let ball_img_path = "assets/ball.png";
+        let background_img_path = "assets/background.png";
+        
         Self {
-            // i think i get error becasuse i have both a file and directory have the same name
-            left_paddle: load_texture("assets/left_paddle.png").await.unwrap(),
-            right_paddle: load_texture("assets/right_paddle.png").await.unwrap(),
-            ball: load_texture("assets/ball.png").await.unwrap(),
-            background: load_texture("assets/background.png").await.unwrap(),
+            left_paddle: load_texture(left_paddle_img_path).await.expect(format!("couldn't find path : {left_paddle_img_path}")),
+            right_paddle: load_texture(right_paddle_im_path).await.expect(format!("couldn't find path : {right_paddle_img_path}")),
+            ball: load_texture(ball_img_path).await.expect(format!("couldn't find path : {ball_paddle_img_path}")),
+            background: load_texture(background_img_path).await.expect(format!("couldn't find path : {backgound_paddle_img_path}")),
         }
     }
 }
