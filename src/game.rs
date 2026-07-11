@@ -1,3 +1,5 @@
+// NOTE this module should named as game.rs
+
 use crate::assets::Assets;
 use crate::config::Config;
 use crate::entities::Entities;
@@ -13,10 +15,10 @@ pub struct State {
     pub entities: Entities,
 }
 impl State {
-    pub async fn new() -> Self {
+    pub async fn init() -> Self {
         let assets: Assets = Assets::load().await;
-        let config = Config::new();
-        let entities = Entities::new(&config);
+        let config = Config::init();
+        let entities = Entities::build(&config);
         Self {
             game_state: GameState::Pausing,
             config: config,

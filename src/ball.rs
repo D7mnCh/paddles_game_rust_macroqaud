@@ -19,7 +19,7 @@ enum Collision {
     Floor,
 }
 impl Ball {
-    pub fn new(config: &Config) -> Self {
+    pub fn build(config: &Config) -> Self {
         let wcfg = &config.window_config;
         // dealling with seeds for getting rand ro work well it term of randomness
         rand::srand(macroquad::miniquad::date::now() as _);

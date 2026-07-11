@@ -7,7 +7,7 @@ pub struct Config {
     pub window_config: WindowConfig,
 }
 impl Config {
-    pub fn new() -> Self {
+    pub fn init() -> Self {
         Self {
             window_config: WindowConfig {
                 screen_width: 1200,

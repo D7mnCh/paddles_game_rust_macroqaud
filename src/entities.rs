@@ -1,3 +1,6 @@
+// NOTE this module should get systems.rs (system between the entities)
+
+
 use crate::ball::Ball;
 use crate::config::Config;
 use crate::paddles::Paddle;
@@ -6,10 +9,10 @@ pub struct Entities {
     pub ball: Ball,
 }
 impl Entities {
-    pub fn new(config: &Config) -> Self {
+    pub fn build(config: &Config) -> Self {
         Self {
-            paddles: Paddle::new(&config),
-            ball: Ball::new(&config),
+            paddles: Paddle::build(&config),
+            ball: Ball::build(&config),
         }
     }
 }

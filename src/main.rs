@@ -4,7 +4,7 @@ mod config;
 mod entities;
 mod game_state;
 mod paddles;
-mod state;
+mod game;
 mod systems;
 mod traits;
 
@@ -34,6 +34,6 @@ pub fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
-    let mut game = State::new().await;
+    let mut game = Game::init().await;
     game.run().await;
 }

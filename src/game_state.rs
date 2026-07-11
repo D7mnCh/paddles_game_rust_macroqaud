@@ -1,3 +1,6 @@
+// NOTE every change in game state should be here
+
+
 use macroquad::prelude::{KeyCode, is_key_pressed};
 pub enum GameState {
     Running,

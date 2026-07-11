@@ -31,7 +31,7 @@ impl Renderable for Paddle {
     }
 }
 impl Paddle {
-    pub fn new(config: &Config) -> [Self; 2] {
+    pub fn build(config: &Config) -> [Self; 2] {
         let wcfg = &config.window_config;
         let size: Vec2 = Vec2::new(20., 60.);
         let paddles = [

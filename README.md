@@ -16,7 +16,8 @@ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 - `git clone` this repo
 - `cargo run` at the root directory (is where the file `Cargo.toml`on it !)
 
-> [!warning] No such file or directory
+> [!WARNING]
+>  No such file or directory
 > You need to be on the directory that have `cargo.toml` on it 
 ## Control the paddles
 
