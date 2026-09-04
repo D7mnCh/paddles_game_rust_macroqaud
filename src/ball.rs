@@ -28,7 +28,7 @@ impl Ball {
                 x: wcfg.screen_width as f32 / 2.,
                 y: wcfg.screen_height as f32 / 2.,
             },
-            vel: Vec2 { x: 10., y: 10. },
+            vel: Vec2 { x: 4., y: 4. },
             rad: 30.,
             collision: None,
         };
